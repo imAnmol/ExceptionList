@@ -1,6 +1,6 @@
 import React from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-// import { Button } from "reactstrap";
+import './header.css';
 
 function Header() {
   return (
@@ -40,7 +40,7 @@ function Header() {
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                Services
+                Master
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="/">
@@ -58,7 +58,7 @@ function Header() {
 
             <li class="nav-item">
               <a class="nav-link" href="/">
-                Help
+                Reporting
               </a>
             </li>
           </ul>

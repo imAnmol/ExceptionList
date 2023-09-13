@@ -5,6 +5,8 @@ import TableComponent from './components/tableComponent';
 import Filter from './components/filter';
 import Header from './components/header';
 import ParentComponent from './components/parentComponent';
+import ExceptionList from './components/exceptionList';
+import Sidebar from './components/sidebar';
 
 function App() {
   return (
@@ -14,9 +16,9 @@ function App() {
           <Header />
         </Row>
         <div style={{height: '10px'}}></div>
-        {/* <Filter/> */}
-        
-        <ParentComponent/>
+        <Filter/>
+        {/* <Sidebar/> */}
+        <ExceptionList/>
         
         
         
