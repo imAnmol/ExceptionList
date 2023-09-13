@@ -148,7 +148,7 @@ const ParentComponent = () => {
 
   return (
     <div>
-      <Filter selectedFilter={selectedFilter} onSelectFilter={onSelectFilter} data={data} />
+      <Filter selectedFilter={selectedFilter} setSelectedFilter = {setSelectedFilter} onSelectFilter={onSelectFilter} data={data} />
       <TableComponent data={data} />
       {/* Rest of the component */}
     </div>

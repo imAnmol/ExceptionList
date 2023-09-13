@@ -1,12 +1,9 @@
 import './App.css';
 import { Container, Row, Col } from 'reactstrap';
 
-import TableComponent from './components/tableComponent';
-import Filter from './components/filter';
 import Header from './components/header';
-import ParentComponent from './components/parentComponent';
 import ExceptionList from './components/exceptionList';
-import Sidebar from './components/sidebar';
+import './App.css';
 
 function App() {
   return (
@@ -16,8 +13,8 @@ function App() {
           <Header />
         </Row>
         <div style={{height: '10px'}}></div>
-        <Filter/>
-        {/* <Sidebar/> */}
+        
+        
         <ExceptionList/>
         
         
