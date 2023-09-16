@@ -1,3 +1,4 @@
+// ExceptionList.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from './tableComponent';
@@ -5,13 +6,20 @@ import Filter from './filter';
 
 function ExceptionList() {
   const [exceptions, setExceptions] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedFilters, setSelectedFilters] = useState({
+    status: 'All',
+    priority: 'All',
+    createdAt: 'All',
+    createdBy: 'All',
+  });
 
   const populateExceptions = () => {
     axios.get('http://localhost:8081/api/exception').then(
       (response) => {
         console.log(response.data);
         setExceptions(response.data);
+        setFilteredData(response.data);
       },
       (error) => {
         console.log(error);
@@ -23,18 +31,23 @@ function ExceptionList() {
     populateExceptions();
   }, []);
 
-  const filterData = () => {
-    if (selectedFilter === 'All') {
-      return exceptions;
-    } else {
-      return exceptions.filter((exception) => exception.status === selectedFilter);
-    }
+  const applyFilters = (filters) => {
+    setSelectedFilters(filters);
+    const filteredData = exceptions.filter((exception) => {
+      return (
+        (filters.status === 'All' || filters.status === 'Status' || exception.status === filters.status) &&
+        (filters.priority === 'All' || filters.priority === 'Priority' || exception.priority === filters.priority) &&
+        (filters.createdAt === 'All' || exception.createdAt === filters.createdAt) &&
+        (filters.createdBy === 'All' || exception.createdBy === filters.createdBy)
+      );
+    });
+    setFilteredData(filteredData);
   };
 
   return (
     <div>
-      <Filter onSelectFilter={setSelectedFilter} data={exceptions} /> {/* Pass the callback function */}
-      <TableComponent data={filterData()} /> {/* Pass the filtered data */}
+      <Filter onSelectFilter={applyFilters} data={exceptions} />
+      <TableComponent data={filteredData} />
     </div>
   );
 }

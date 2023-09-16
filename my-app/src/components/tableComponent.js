@@ -9,7 +9,11 @@ import {
   Button,
   Paper,
   styled,
+  TablePagination,
+  Input,
+  Box,
 } from '@mui/material';
+
 
 import Pagination from './pagination'; // Import your Pagination component
 
@@ -32,6 +36,11 @@ const Card = styled(Paper)(({ theme }) => ({
   backdropFilter: 'blur(10px)',
 }));
 
+const SearchBar = styled(Input)(({ theme }) => ({
+  width: '100%',
+  marginBottom: theme.spacing(2),
+}));
+
 const getStatusButtonProps = (status) => {
   switch (status) {
     case 'Open':
@@ -50,6 +59,10 @@ const getStatusButtonProps = (status) => {
 const TableComponent = ({ data }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [assigning, setAssigning] = useState(false);
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -64,10 +77,24 @@ const TableComponent = ({ data }) => {
     return null;
   }
 
+  const handleAssignClick = (e) => {
+    setSearchTerm(e.target.value)
+    
+    setAssigning(true);
+  };
+
+  const handleAssign = () => {
+    
+    console.log(`Assigned exception to user with ID: ${selectedUserId}`);
+    setAssigning(false);
+  };
+
   const headers = Object.keys(data[0]);
 
   return (
     <div>
+      
+
       <Card>
         <TableContainer component={Paper}>
           <Table>
@@ -75,6 +102,7 @@ const TableComponent = ({ data }) => {
               <TableRow>
                 {headers.map((header) => (
                   <StyledTableCell key={header}>{header}</StyledTableCell>
+                  
                 ))}
               </TableRow>
             </TableHead>

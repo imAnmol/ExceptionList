@@ -1,77 +1,111 @@
-import React from 'react';
-import { Button, styled } from '@mui/material';
-import {useState} from 'react';
+// Filter.js
+import React, { useState } from 'react';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Button,
+  Box,
+  styled,
+} from '@mui/material';
 
-const FilterButton = styled(Button)(({ theme }) => ({
-  backgroundColor: 'black',
-//   color: theme.palette.common.white,
-  color : 'white',
-  border : '0px',
-  height: '40px', // Adjust the height as needed
-  width: '180px', // Adjust the width as needed
-  backgroundColor: '#1AB4B3',
+const StyledFormControl = styled(FormControl)({
+    Width: 30,
+    Height: 30,
+  marginRight: 16,
+});
+
+const StyledSelect = styled(Select)(({ theme }) => ({
+    Width: 30,
+    Height: 30,
+    marginTop: 16,
+    padding: '3px', 
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    backgroundColor: 'white',
+    '& .MuiSelect-select': {
+      height: '25px', 
+      Width: '30px',
+      padding: '3px', 
+    },
+  }));
+
+const StyledButton = styled(Button)({
+  marginTop: 16,
+  backgroundColor: '#4BC7CF',
+  color: 'white',
+  padding: '10px 20px',
   '&:hover': {
     backgroundColor: '#4BC7CF',
   },
-}));
+});
 
+const Filter = ({ onSelectFilter, data }) => {
+  const [selectedStatus, setSelectedStatus] = useState('Status');
+  const [selectedPriority, setSelectedPriority] = useState('Priority');
+  const [selectedCreatedAt, setSelectedCreatedAt] = useState('All');
+  const [selectedCreatedBy, setSelectedCreatedBy] = useState('All');
 
-
-const Filter = ({onSelectFilter, data }) => {
-    
-    const [selectedFilter, setSelectedFilter] = useState('All');
-
-    const getStatusCount = (status) => {
-        if (status === 'All') {
-          return data.length;
-        } else {
-          return data.filter((exception) => exception.status === status).length;
-        }
-      };
-
-    const handleFilter = (filter) => {
-        setSelectedFilter(filter);
-        onSelectFilter(filter); // Pass the selected filter to the parent component
-      };
-  
-    return (
-      <div>
-        <FilterButton
-          variant={selectedFilter === 'All' ? 'contained' : 'outlined'}
-          onClick={() => handleFilter('All')}
-          sx={{ marginRight: '8px' }}
-        >
-          All ({getStatusCount('All')})
-        </FilterButton>
-        <FilterButton
-          variant={selectedFilter === 'Open' ? 'contained' : 'outlined'}
-          onClick={() => handleFilter('Open')}
-          sx={{ marginRight: '8px' }}
-        >
-          Open ({getStatusCount('Open')})
-        </FilterButton>
-        <FilterButton
-          variant={selectedFilter === 'Pending' ? 'contained' : 'outlined'}
-          onClick={() => handleFilter('Pending')}
-          sx={{ marginRight: '8px' }}
-        >
-          Pending ({getStatusCount('Pending')})
-        </FilterButton>
-        <FilterButton
-          variant={selectedFilter === 'Resolved' ? 'contained' : 'outlined'}
-          onClick={() => handleFilter('Resolved')}
-          sx={{ marginRight: '8px' }}
-        >
-          Resolved ({getStatusCount('Resolved')})
-        </FilterButton>
-        <FilterButton
-          variant={selectedFilter === 'Closed' ? 'contained' : 'outlined'}
-          onClick={() => handleFilter('Closed')}
-        >
-          Closed ({getStatusCount('Closed')})
-        </FilterButton>
-      </div>
-    );
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
   };
-  
-  export default Filter;
+
+  const handlePriorityChange = (event) => {
+    setSelectedPriority(event.target.value);
+  };
+
+  const handleCreatedAtChange = (event) => {
+    setSelectedCreatedAt(event.target.value);
+  };
+
+  const handleCreatedByChange = (event) => {
+    setSelectedCreatedBy(event.target.value);
+  };
+
+  const applyFilters = () => {
+    const filters = {
+      status: selectedStatus,
+      priority: selectedPriority,
+      createdAt: selectedCreatedAt,
+      createdBy: selectedCreatedBy,
+    };
+    onSelectFilter(filters);
+  };
+
+  return (
+    <div>
+      <StyledFormControl>
+        
+        <StyledSelect value={selectedStatus} onChange={handleStatusChange}>
+        <MenuItem value="Status" disabled>Status</MenuItem>
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Open">Open</MenuItem>
+          <MenuItem value="Resolved">Resolved</MenuItem>
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Closed">Closed</MenuItem>
+        </StyledSelect>
+      </StyledFormControl>
+
+      <StyledFormControl>
+        <StyledSelect value={selectedPriority} onChange={handlePriorityChange}>
+          <MenuItem value="Priority" disabled>Priority</MenuItem>
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="1">1 (Very High)</MenuItem>
+          <MenuItem value="2">2 (High)</MenuItem>
+          <MenuItem value="3">3 (Medium)</MenuItem>
+          <MenuItem value="4">4 (Low)</MenuItem>
+          <MenuItem value="5">5 (Very Low)</MenuItem>
+          <MenuItem value="Ascending">Ascending Order</MenuItem>
+        </StyledSelect>
+      </StyledFormControl>
+
+
+      <StyledButton variant="contained" onClick={applyFilters}>
+        Apply Filters
+      </StyledButton>
+    </div>
+  );
+};
+
+export default Filter;
