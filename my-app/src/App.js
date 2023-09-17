@@ -4,6 +4,7 @@ import { Container, Row, Col } from 'reactstrap';
 import Header from './components/header';
 import ExceptionList from './components/exceptionList';
 import './App.css';
+import MiniDrawer from './components/sidebar';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         
         
         <ExceptionList/>
+        
         
         
         

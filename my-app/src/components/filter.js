@@ -41,11 +41,12 @@ const StyledButton = styled(Button)({
   },
 });
 
-const Filter = ({ onSelectFilter, data }) => {
+const Filter = ({ onSelectFilter, onSortAscending , data }) => {
   const [selectedStatus, setSelectedStatus] = useState('Status');
   const [selectedPriority, setSelectedPriority] = useState('Priority');
   const [selectedCreatedAt, setSelectedCreatedAt] = useState('All');
   const [selectedCreatedBy, setSelectedCreatedBy] = useState('All');
+  const [ascendingSort, setAscendingSort] = useState(false);
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
@@ -64,14 +65,26 @@ const Filter = ({ onSelectFilter, data }) => {
   };
 
   const applyFilters = () => {
+    
     const filters = {
       status: selectedStatus,
       priority: selectedPriority,
       createdAt: selectedCreatedAt,
       createdBy: selectedCreatedBy,
     };
-    onSelectFilter(filters);
+    if(filters.priority === 'Sort'){
+        filters.priority= 'All';
+        onSelectFilter(filters);
+        onSortAscending(); 
+    }
+    else{
+        onSelectFilter(filters);
+    }
+    
+    
   };
+
+
 
   return (
     <div>
@@ -96,7 +109,7 @@ const Filter = ({ onSelectFilter, data }) => {
           <MenuItem value="3">3 (Medium)</MenuItem>
           <MenuItem value="4">4 (Low)</MenuItem>
           <MenuItem value="5">5 (Very Low)</MenuItem>
-          <MenuItem value="Ascending">Ascending Order</MenuItem>
+          <MenuItem value="Sort">Sort</MenuItem>
         </StyledSelect>
       </StyledFormControl>
 

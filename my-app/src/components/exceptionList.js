@@ -44,10 +44,23 @@ function ExceptionList() {
     setFilteredData(filteredData);
   };
 
+  const handleSortAscending = () => {
+    const sortedData = [...filteredData]; // Create a copy of the filtered data
+    sortedData.sort((a, b) => {
+      // Assuming you have a field named "priority" to sort by
+      return a.priority - b.priority;
+    });
+    setFilteredData(sortedData);
+  };
+
+  const updateData = (newData) => {
+    setFilteredData(newData);
+  };
+
   return (
     <div>
-      <Filter onSelectFilter={applyFilters} data={exceptions} />
-      <TableComponent data={filteredData} />
+      <Filter onSelectFilter={applyFilters} onSortAscending={handleSortAscending} data={exceptions} />
+      <TableComponent data={filteredData} updateData={updateData} />
     </div>
   );
 }

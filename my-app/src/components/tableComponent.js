@@ -13,9 +13,11 @@ import {
   Input,
   Box,
 } from '@mui/material';
+import axios from 'axios';
 
 
-import Pagination from './pagination'; // Import your Pagination component
+import Pagination from './pagination'; 
+import Header from './header';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: 'rgba(255, 255, 255, 0.2)',
@@ -56,12 +58,15 @@ const getStatusButtonProps = (status) => {
   }
 };
 
-const TableComponent = ({ data }) => {
+const TableComponent = ({ data , updateData}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
+  const [status, setStatus] = useState('Open');
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedExceptionId, setSelectedExceptionId] = useState(null);
   const [assigning, setAssigning] = useState(false);
+  const [selectedException, setSelectedException] = useState(null);
 
 
   const handleChangePage = (event, newPage) => {
@@ -77,16 +82,52 @@ const TableComponent = ({ data }) => {
     return null;
   }
 
-  const handleAssignClick = (e) => {
-    setSearchTerm(e.target.value)
-    
+  const handleExceptionClick = (exception) => {
+    setSelectedException(exception);
+  };
+
+
+  const handleAssignClick = (exceptionId) => {
+    setSelectedExceptionId(exceptionId);
     setAssigning(true);
   };
 
-  const handleAssign = () => {
+  const handleAssign = (userID) => {
+    setSelectedUserId(userID);
+    console.log(`Assigned exception ${selectedExceptionId} to user with ID:  ${userID}`);
+
+    const dataToSend = {
+      exceptionId: selectedExceptionId, 
+      userId: userID, 
+    };
+  
     
-    console.log(`Assigned exception to user with ID: ${selectedUserId}`);
+   
+
     setAssigning(false);
+    setSearchTerm('');
+    const updatedData = data.map((row) => {
+      if (row.exceptionId === selectedExceptionId) {
+        return {
+          ...row,
+          action: 'Assigned', 
+        };
+      }
+      return row;
+    });
+    updateData(updatedData);
+
+    axios
+    .post('http://localhost:8081/api/assign-exception', dataToSend)
+    .then((response) => {
+     
+      console.log('Assignment successful', response.data);
+    })
+    .catch((error) => {
+
+      console.error('Assignment failed', error);
+    });
+    
   };
 
   const headers = Object.keys(data[0]);
@@ -94,6 +135,53 @@ const TableComponent = ({ data }) => {
   return (
     <div>
       
+      <Card>
+      {selectedException && (
+        <Header exception={selectedException} />
+      )}
+      </Card>
+
+      
+      <Card>
+      {assigning && (<div><SearchBar
+          placeholder="Search for users"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          
+        />
+        <Box mb={2}>
+              <b>Select a user to assign the exception:</b>
+            </Box>
+            </div>)
+      }
+
+        
+        
+          <div>
+            
+            {searchTerm &&  <ul>
+              {data
+                .filter((user) =>
+                  user.exceptionId.includes(searchTerm)
+                )
+                .map((user) => (
+                  
+                  <li key={user.exceptionId}>
+                    
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleAssign(user.exceptionId)}
+                    >
+                      {user.exceptionId}
+                    </Button>
+                  </li>
+                ))}
+            </ul>}
+            
+          </div>
+        
+      </Card>
+  
 
       <Card>
         <TableContainer component={Paper}>
@@ -101,7 +189,7 @@ const TableComponent = ({ data }) => {
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
-                  <StyledTableCell key={header}>{header}</StyledTableCell>
+                  <StyledTableCell key={header}>{header.toUpperCase()}</StyledTableCell>
                   
                 ))}
               </TableRow>
@@ -121,6 +209,21 @@ const TableComponent = ({ data }) => {
                     }}
                   >
                     {headers.map((header) => {
+                      if (header === 'exceptionId') {
+                  
+                  return (
+                    <TableCell key={header}>
+                      <button
+                        onClick={() => handleExceptionClick(row)}
+                        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+                      >
+                        {row[header]} 
+
+                      </button>
+                    </TableCell>
+                  );
+                      }
+
                       if (header === 'status') {
                         const { color, label } = getStatusButtonProps(row[header]);
                         return (
@@ -130,6 +233,20 @@ const TableComponent = ({ data }) => {
                               style={{ backgroundColor: color, color: 'black' }}
                             >
                               {label}
+                            </Button>
+                          </TableCell>
+                        );
+                      }
+                      else if (header === 'action') {
+                      
+                        return (
+                          <TableCell key={header}>
+                            <Button
+                              variant="contained"
+                              color="primary"
+                              onClick={() => handleAssignClick(row.exceptionId)}
+                            >
+                              Assign
                             </Button>
                           </TableCell>
                         );
