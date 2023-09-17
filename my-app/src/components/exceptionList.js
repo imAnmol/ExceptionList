@@ -14,7 +14,7 @@ function ExceptionList() {
     createdBy: 'All',
   });
 
-  const populateExceptions = () => {
+  var populateExceptions = () => {
     axios.get('http://localhost:8081/api/exception').then(
       (response) => {
         console.log(response.data);
@@ -45,9 +45,8 @@ function ExceptionList() {
   };
 
   const handleSortAscending = () => {
-    const sortedData = [...filteredData]; // Create a copy of the filtered data
+    const sortedData = [...filteredData]; 
     sortedData.sort((a, b) => {
-      // Assuming you have a field named "priority" to sort by
       return a.priority - b.priority;
     });
     setFilteredData(sortedData);

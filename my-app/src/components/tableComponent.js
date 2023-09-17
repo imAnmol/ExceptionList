@@ -12,7 +12,13 @@ import {
   TablePagination,
   Input,
   Box,
+
 } from '@mui/material';
+
+import Stack from "@mui/material/Stack";
+import CheckIcon from "@mui/icons-material/Check";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import ConstructionIcon from "@mui/icons-material/Construction";
 import axios from 'axios';
 
 
@@ -59,6 +65,7 @@ const getStatusButtonProps = (status) => {
 };
 
 const TableComponent = ({ data , updateData}) => {
+  const [tableData, setTableData] = useState(data);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,6 +74,7 @@ const TableComponent = ({ data , updateData}) => {
   const [selectedExceptionId, setSelectedExceptionId] = useState(null);
   const [assigning, setAssigning] = useState(false);
   const [selectedException, setSelectedException] = useState(null);
+  const [showAssignedPopup, setShowAssignedPopup] = useState(false);
 
 
   const handleChangePage = (event, newPage) => {
@@ -86,6 +94,13 @@ const TableComponent = ({ data , updateData}) => {
     setSelectedException(exception);
   };
 
+  const handleAssignedClick = () => {
+
+    setShowAssignedPopup(true);
+    setTimeout(() => {
+      setShowAssignedPopup(false);
+    }, 2000); 
+  };
 
   const handleAssignClick = (exceptionId) => {
     setSelectedExceptionId(exceptionId);
@@ -95,38 +110,28 @@ const TableComponent = ({ data , updateData}) => {
   const handleAssign = (userID) => {
     setSelectedUserId(userID);
     console.log(`Assigned exception ${selectedExceptionId} to user with ID:  ${userID}`);
+  
+    setAssigning(false);
+    setSearchTerm('');
 
     const dataToSend = {
       exceptionId: selectedExceptionId, 
       userId: userID, 
     };
-  
-    
-   
-
-    setAssigning(false);
-    setSearchTerm('');
-    const updatedData = data.map((row) => {
-      if (row.exceptionId === selectedExceptionId) {
-        return {
-          ...row,
-          action: 'Assigned', 
-        };
-      }
-      return row;
-    });
-    updateData(updatedData);
 
     axios
     .post('http://localhost:8081/api/assign-exception', dataToSend)
     .then((response) => {
      
       console.log('Assignment successful', response.data);
+      setTableData(data);
     })
     .catch((error) => {
 
       console.error('Assignment failed', error);
     });
+    
+    updateData(data);
     
   };
 
@@ -241,13 +246,26 @@ const TableComponent = ({ data , updateData}) => {
                       
                         return (
                           <TableCell key={header}>
-                            <Button
+                            {row[header] === 'Assigned' ? <React.Fragment><Button
                               variant="contained"
                               color="primary"
+                              // startIcon={<CheckIcon />}
+                              onClick={handleAssignedClick}
+                            > {row[header]}
+                                  </Button>
+                                   {showAssignedPopup && <div className="popup">Already assigned</div>} </React.Fragment> :
+                               
+                            (
+                              <Button
+                              variant="contained"
+                              color="secondary"
+                              startIcon={<CheckIcon />}
                               onClick={() => handleAssignClick(row.exceptionId)}
                             >
-                              Assign
+                              {row[header]}
                             </Button>
+                            )}
+                            
                           </TableCell>
                         );
                       }
