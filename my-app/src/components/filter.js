@@ -33,6 +33,7 @@ const StyledSelect = styled(Select)(({ theme }) => ({
 
 const StyledButton = styled(Button)({
   marginTop: 16,
+  height : 37,
   backgroundColor: '#4BC7CF',
   color: 'white',
   padding: '10px 20px',
@@ -46,7 +47,7 @@ const Filter = ({ onSelectFilter, onSortAscending , data }) => {
   const [selectedPriority, setSelectedPriority] = useState('Priority');
   const [selectedCreatedAt, setSelectedCreatedAt] = useState('All');
   const [selectedCreatedBy, setSelectedCreatedBy] = useState('All');
-  const [ascendingSort, setAscendingSort] = useState(false);
+  
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
@@ -84,7 +85,7 @@ const Filter = ({ onSelectFilter, onSortAscending , data }) => {
     
   };
 
-
+  console.log('c');
 
   return (
     <div>

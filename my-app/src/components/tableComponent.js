@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableContainer,
@@ -12,70 +12,79 @@ import {
   TablePagination,
   Input,
   Box,
+} from "@mui/material";
 
-} from '@mui/material';
-
-import Stack from "@mui/material/Stack";
 import CheckIcon from "@mui/icons-material/Check";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import ConstructionIcon from "@mui/icons-material/Construction";
-import axios from 'axios';
+import CloseIcon from "@mui/icons-material/Close";
+import SearchIcon from "@mui/icons-material/Search";
+import SendIcon from "@mui/icons-material/Send";
 
+import { ToastContainer, toast } from "react-toastify";
 
-import Pagination from './pagination'; 
-import Header from './header';
+import axios from "axios";
+import Pagination from "./pagination";
+import Header from "./header";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  backgroundColor: "rgba(255, 255, 255, 0.2)",
   color: theme.palette.text.primary,
   borderBottom: `1px solid ${theme.palette.divider}`,
-  fontWeight: 'bold',
-  position: 'sticky',
+  fontWeight: "bold",
+  position: "sticky",
   top: 0,
   zIndex: 1,
 }));
 
 const Card = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
-  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
   borderRadius: theme.spacing(1),
   marginBottom: theme.spacing(2),
-  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  backdropFilter: 'blur(10px)',
+  backgroundColor: "rgba(255, 255, 255, 0.1)",
+  backdropFilter: "blur(10px)",
 }));
 
 const SearchBar = styled(Input)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
   marginBottom: theme.spacing(2),
 }));
 
 const getStatusButtonProps = (status) => {
   switch (status) {
-    case 'Open':
-      return { color: '#A5F1F5', label: 'Open' };
-    case 'Closed':
-      return { color: '#FFFFF3', label: 'Closed' };
-    case 'Pending':
-      return { color: '#FFF4DF', label: 'Pending' };
-    case 'Resolved':
-      return { color: '#9FE2BF', label: 'Resolved' };
+    case "Open":
+      return { color: "#A5F1F5", label: "Open", icon: <SearchIcon /> };
+    case "Closed":
+      return { color: "#167e65", label: "Closed", icon: <CloseIcon /> };
+    case "Resolved":
+      return { color: "#5c5cff", label: "Resolved", icon: <ConstructionIcon />};
+    case "Pending":
+      return { color: "#FFF4DF", label: "Pending", icon: <BorderColorIcon /> };
+
     default:
-      return { color: 'transparent', label: status };
+      return { color: "transparent", label: status };
   }
 };
 
-const TableComponent = ({ data , updateData}) => {
+const TableComponent = ({ data, updateData }) => {
   const [tableData, setTableData] = useState(data);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [status, setStatus] = useState('Open');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedExceptionId, setSelectedExceptionId] = useState(null);
   const [assigning, setAssigning] = useState(false);
   const [selectedException, setSelectedException] = useState(null);
   const [showAssignedPopup, setShowAssignedPopup] = useState(false);
 
+  useEffect(() => {
+    if (showAssignedPopup) {
+      toast("Already assigned!", {
+        autoClose: 2000,
+      });
+    }
+  }, [showAssignedPopup]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -95,11 +104,12 @@ const TableComponent = ({ data , updateData}) => {
   };
 
   const handleAssignedClick = () => {
-
+    setAssigning(false);
     setShowAssignedPopup(true);
+    setSearchTerm();
     setTimeout(() => {
       setShowAssignedPopup(false);
-    }, 2000); 
+    }, 2000);
   };
 
   const handleAssignClick = (exceptionId) => {
@@ -109,70 +119,62 @@ const TableComponent = ({ data , updateData}) => {
 
   const handleAssign = (userID) => {
     setSelectedUserId(userID);
-    console.log(`Assigned exception ${selectedExceptionId} to user with ID:  ${userID}`);
-  
+    console.log(
+      `Assigned exception ${selectedExceptionId} to user with ID:  ${userID}`
+    );
+
     setAssigning(false);
-    setSearchTerm('');
+    setSearchTerm("");
 
     const dataToSend = {
-      exceptionId: selectedExceptionId, 
-      userId: userID, 
+      exceptionId: selectedExceptionId,
+      userId: userID,
     };
 
     axios
-    .post('http://localhost:8081/api/assign-exception', dataToSend)
-    .then((response) => {
-     
-      console.log('Assignment successful', response.data);
-      setTableData(data);
-    })
-    .catch((error) => {
+      .post("http://localhost:8081/api/assign-exception", dataToSend)
+      .then((response) => {
+        console.log("Assignment successful", response.data);
+        setTableData(data);
+      })
+      .catch((error) => {
+        console.error("Assignment failed", error);
+      });
 
-      console.error('Assignment failed', error);
-    });
-    
     updateData(data);
-    
   };
-
-  const headers = Object.keys(data[0]);
+  console.log('b');
+  let headers = Object.keys(data[0]);
+  const columnsToExclude = ["description", "updatedBy", "updatedAt"];
+  headers = headers.filter((header) => !columnsToExclude.includes(header));
 
   return (
     <div>
-      
-      <Card>
-      {selectedException && (
-        <Header exception={selectedException} />
-      )}
-      </Card>
+      {/* <Card>
+        {selectedException && <Header exception={selectedException} />}
+      </Card> */}
 
-      
       <Card>
-      {assigning && (<div><SearchBar
-          placeholder="Search for users"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          
-        />
-        <Box mb={2}>
+        {assigning && (
+          <div>
+            <SearchBar
+              placeholder="Search for users"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Box mb={2}>
               <b>Select a user to assign the exception:</b>
             </Box>
-            </div>)
-      }
+          </div>
+        )}
 
-        
-        
-          <div>
-            
-            {searchTerm &&  <ul>
+        <div>
+          {searchTerm && (
+            <ul>
               {data
-                .filter((user) =>
-                  user.exceptionId.includes(searchTerm)
-                )
+                .filter((user) => user.exceptionId.includes(searchTerm))
                 .map((user) => (
-                  
                   <li key={user.exceptionId}>
-                    
                     <Button
                       variant="outlined"
                       onClick={() => handleAssign(user.exceptionId)}
@@ -181,12 +183,10 @@ const TableComponent = ({ data , updateData}) => {
                     </Button>
                   </li>
                 ))}
-            </ul>}
-            
-          </div>
-        
+            </ul>
+          )}
+        </div>
       </Card>
-  
 
       <Card>
         <TableContainer component={Paper}>
@@ -194,8 +194,9 @@ const TableComponent = ({ data , updateData}) => {
             <TableHead>
               <TableRow>
                 {headers.map((header) => (
-                  <StyledTableCell key={header}>{header.toUpperCase()}</StyledTableCell>
-                  
+                  <StyledTableCell key={header}>
+                    {header.toUpperCase()}
+                  </StyledTableCell>
                 ))}
               </TableRow>
             </TableHead>
@@ -209,63 +210,69 @@ const TableComponent = ({ data , updateData}) => {
                     sx={{
                       backgroundColor:
                         index % 2 === 0
-                          ? 'rgba(255, 255, 255, 0.1)'
-                          : 'rgba(255, 255, 255, 0.05)',
+                          ? "rgba(255, 255, 255, 0.1)"
+                          : "rgba(255, 255, 255, 0.05)",
                     }}
                   >
                     {headers.map((header) => {
-                      if (header === 'exceptionId') {
-                  
-                  return (
-                    <TableCell key={header}>
-                      <button
-                        onClick={() => handleExceptionClick(row)}
-                        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
-                      >
-                        {row[header]} 
-
-                      </button>
-                    </TableCell>
-                  );
+                      if (header === "exceptionId") {
+                        return (
+                          <TableCell key={header}>
+                            <button
+                              onClick={() => handleExceptionClick(row)}
+                              style={{
+                                background: "transparent",
+                                border: "none",
+                                cursor: "pointer",
+                              }}
+                            >
+                              {row[header]}
+                            </button>
+                          </TableCell>
+                        );
                       }
 
-                      if (header === 'status') {
-                        const { color, label } = getStatusButtonProps(row[header]);
+                      if (header === "status") {
+                        const { color, label, icon } = getStatusButtonProps(
+                          row[header]
+                        );
                         return (
                           <TableCell key={header}>
                             <Button
-                              variant="contained"
-                              style={{ backgroundColor: color, color: 'black' }}
+                              variant="text"
+                              startIcon={icon}
+                              style={{ backgroundColor: 'white', color: "black" }}
                             >
                               {label}
                             </Button>
                           </TableCell>
                         );
-                      }
-                      else if (header === 'action') {
-                      
+                      } else if (header === "action") {
                         return (
                           <TableCell key={header}>
-                            {row[header] === 'Assigned' ? <React.Fragment><Button
-                              variant="contained"
-                              color="primary"
-                              // startIcon={<CheckIcon />}
-                              onClick={handleAssignedClick}
-                            > {row[header]}
-                                  </Button>
-                                   {showAssignedPopup && <div className="popup">Already assigned</div>} </React.Fragment> :
-                               
-                            (
+                            {row[header] === "Assigned" ? (
+                              <React.Fragment>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  startIcon={<CheckIcon />}
+                                  onClick={handleAssignedClick}
+                                >
+                                  {row[header]}
+                                </Button>
+                              </React.Fragment>
+                            ) : (
                               <Button
-                              variant="contained"
-                              color="secondary"
-                              startIcon={<CheckIcon />}
-                              onClick={() => handleAssignClick(row.exceptionId)}
-                            >
-                              {row[header]}
-                            </Button>
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<SendIcon />}
+                                onClick={() =>
+                                  handleAssignClick(row.exceptionId)
+                                }
+                              >
+                                {row[header]}
+                              </Button>
                             )}
-                            
                           </TableCell>
                         );
                       }

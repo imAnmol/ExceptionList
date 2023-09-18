@@ -17,7 +17,7 @@ function ExceptionList() {
   var populateExceptions = () => {
     axios.get('http://localhost:8081/api/exception').then(
       (response) => {
-        console.log(response.data);
+        console.log('A');
         setExceptions(response.data);
         setFilteredData(response.data);
       },
@@ -25,6 +25,10 @@ function ExceptionList() {
         console.log(error);
       }
     );
+  };
+
+  const updateData = (newData) => {
+    setFilteredData(newData);
   };
 
   useEffect(() => {
@@ -52,9 +56,7 @@ function ExceptionList() {
     setFilteredData(sortedData);
   };
 
-  const updateData = (newData) => {
-    setFilteredData(newData);
-  };
+
 
   return (
     <div>

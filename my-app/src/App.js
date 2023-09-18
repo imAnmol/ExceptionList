@@ -3,8 +3,8 @@ import { Container, Row, Col } from 'reactstrap';
 
 import Header from './components/header';
 import ExceptionList from './components/exceptionList';
-import './App.css';
-import MiniDrawer from './components/sidebar';
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
@@ -12,8 +12,9 @@ function App() {
       
         <Row>
           <Header />
+          <ToastContainer />
         </Row>
-        <div style={{height: '10px'}}></div>
+        <div style={{height: '10px' , margin: '30px'}}></div>
         
         
         <ExceptionList/>
