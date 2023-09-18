@@ -12,6 +12,7 @@ import {
   TablePagination,
   Input,
   Box,
+  Drawer
 } from "@mui/material";
 
 import CheckIcon from "@mui/icons-material/Check";
@@ -20,12 +21,14 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
 import SendIcon from "@mui/icons-material/Send";
+import IconButton from "@mui/material/IconButton";
+import ClearIcon from "@mui/icons-material/Clear";
 
 import { ToastContainer, toast } from "react-toastify";
 
 import axios from "axios";
 import Pagination from "./pagination";
-import Header from "./header";
+import MiniDrawer from "./sidebar";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   backgroundColor: "rgba(255, 255, 255, 0.2)",
@@ -67,7 +70,7 @@ const getStatusButtonProps = (status) => {
   }
 };
 
-const TableComponent = ({ data, updateData }) => {
+const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
   const [tableData, setTableData] = useState(data);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -77,6 +80,7 @@ const TableComponent = ({ data, updateData }) => {
   const [assigning, setAssigning] = useState(false);
   const [selectedException, setSelectedException] = useState(null);
   const [showAssignedPopup, setShowAssignedPopup] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (showAssignedPopup) {
@@ -99,8 +103,13 @@ const TableComponent = ({ data, updateData }) => {
     return null;
   }
 
+
   const handleExceptionClick = (exception) => {
     setSelectedException(exception);
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleAssignedClick = () => {
@@ -115,6 +124,7 @@ const TableComponent = ({ data, updateData }) => {
   const handleAssignClick = (exceptionId) => {
     setSelectedExceptionId(exceptionId);
     setAssigning(true);
+    setShowAssignedPopup(false);
   };
 
   const handleAssign = (userID) => {
@@ -124,7 +134,7 @@ const TableComponent = ({ data, updateData }) => {
     );
 
     setAssigning(false);
-    setSearchTerm("");
+    setSearchTerm();
 
     const dataToSend = {
       exceptionId: selectedExceptionId,
@@ -143,7 +153,18 @@ const TableComponent = ({ data, updateData }) => {
 
     updateData(data);
   };
+
+  const handleSearchClear = () => {
+    
+    setSearchTerm();
+    setAssigning(false);
+    updateData(data);
+  };
+
+
+
   console.log('b');
+
   let headers = Object.keys(data[0]);
   const columnsToExclude = ["description", "updatedBy", "updatedAt"];
   headers = headers.filter((header) => !columnsToExclude.includes(header));
@@ -154,17 +175,36 @@ const TableComponent = ({ data, updateData }) => {
         {selectedException && <Header exception={selectedException} />}
       </Card> */}
 
+        {/* <button onClick={toggleSidebar} style={{marginTop : '10px'  }}>Toggle Sidebar</button> */}
+        <Drawer
+        anchor="left"
+        open={isSidebarOpen}
+        onClose={toggleSidebar}
+        variant="temporary"
+        ModalProps={{ keepMounted: true }}
+        onClick={toggleSidebar} 
+      >
+        <MiniDrawer/>
+        </Drawer>
+
       <Card>
         {assigning && (
-          <div>
+          <div style={{marginTop : '7px'}}>
+            <Box mb={2}>
+              <b>Select a user to assign the exception:</b>
+            </Box>
+
+            <div style={{ display: "flex", alignItems: "center" }}>
             <SearchBar
               placeholder="Search for users"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Box mb={2}>
-              <b>Select a user to assign the exception:</b>
-            </Box>
+            <IconButton onClick={handleSearchClear} size="small">
+              <ClearIcon />
+            </IconButton>
+            </div>
+            
           </div>
         )}
 

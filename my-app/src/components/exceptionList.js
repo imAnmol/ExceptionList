@@ -14,6 +14,7 @@ function ExceptionList() {
     createdBy: 'All',
   });
 
+
   var populateExceptions = () => {
     axios.get('http://localhost:8081/api/exception').then(
       (response) => {
@@ -55,6 +56,7 @@ function ExceptionList() {
     });
     setFilteredData(sortedData);
   };
+
 
 
 

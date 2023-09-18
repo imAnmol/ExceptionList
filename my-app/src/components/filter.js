@@ -10,6 +10,8 @@ import {
   styled,
 } from '@mui/material';
 
+import SyncIcon from '@mui/icons-material/Sync';
+
 const StyledFormControl = styled(FormControl)({
     Width: 30,
     Height: 30,
@@ -42,7 +44,7 @@ const StyledButton = styled(Button)({
   },
 });
 
-const Filter = ({ onSelectFilter, onSortAscending , data }) => {
+const Filter = ({ onSelectFilter, onSortAscending , data ,onRefresh }) => {
   const [selectedStatus, setSelectedStatus] = useState('Status');
   const [selectedPriority, setSelectedPriority] = useState('Priority');
   const [selectedCreatedAt, setSelectedCreatedAt] = useState('All');
@@ -81,9 +83,22 @@ const Filter = ({ onSelectFilter, onSortAscending , data }) => {
     else{
         onSelectFilter(filters);
     }
-    
-    
   };
+
+  const refresh = () => {
+    setSelectedStatus('Status');
+    setSelectedPriority('Priority');
+    setSelectedCreatedAt('All');
+    setSelectedCreatedBy('All');
+    const filters = {
+        status: 'Status',
+        priority: 'Priority',
+        createdAt: 'All',
+        createdBy: 'All'
+      };
+      onSelectFilter(filters);
+    //   onRefresh();
+  }
 
   console.log('c');
 
@@ -117,6 +132,10 @@ const Filter = ({ onSelectFilter, onSortAscending , data }) => {
 
       <StyledButton variant="contained" onClick={applyFilters}>
         Apply Filters
+      </StyledButton>
+
+      <StyledButton variant="text" backgroundColor = 'white' onClick={refresh} style={{ marginLeft : '5px' }}>
+        {<SyncIcon />}
       </StyledButton>
     </div>
   );

@@ -1,5 +1,7 @@
 import './App.css';
-import { Container, Row, Col } from 'reactstrap';
+import {Row} from 'reactstrap';
+import { BrowserRouter as Router } from 'react-router-dom';
+
 
 import Header from './components/header';
 import ExceptionList from './components/exceptionList';
@@ -9,7 +11,7 @@ import { ToastContainer } from 'react-toastify';
 function App() {
   return (
     <div className="App">
-      
+      <Router>
         <Row>
           <Header />
           <ToastContainer />
@@ -18,6 +20,7 @@ function App() {
         
         
         <ExceptionList/>
+        </Router>
         
         
         
