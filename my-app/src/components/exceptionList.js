@@ -1,8 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from './tableComponent';
 import Filter from './filter';
+import { Link } from 'react-router-dom';
+
 
 function ExceptionList() {
   const [exceptions, setExceptions] = useState([]);

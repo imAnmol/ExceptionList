@@ -29,10 +29,12 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import Pagination from "./pagination";
 import MiniDrawer from "./sidebar";
+import { Link } from 'react-router-dom';
+
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  backgroundColor: "rgba(255, 255, 255, 0.2)",
-  color: theme.palette.text.primary,
+  backgroundColor: "black",
+  color: 'white',
   borderBottom: `1px solid ${theme.palette.divider}`,
   fontWeight: "bold",
   position: "sticky",
@@ -268,16 +270,8 @@ const TableComponent = ({ data, updateData , onRefresh , refresh }) => {
                       if (header === "exceptionId") {
                         return (
                           <TableCell key={header}>
-                            <button
-                              onClick={() => handleExceptionClick(row)}
-                              style={{
-                                background: "transparent",
-                                border: "none",
-                                cursor: "pointer",
-                              }}
-                            >
-                              {row[header]}
-                            </button>
+                            <Link to={`/exception-details/${row.exceptionId}`}>{row[header]}</Link>
+                            
                           </TableCell>
                         );
                       }
@@ -335,13 +329,13 @@ const TableComponent = ({ data, updateData , onRefresh , refresh }) => {
         </TableContainer>
       </Card>
 
-      <Pagination
+      {/* <Pagination
         page={page}
         rowsPerPage={rowsPerPage}
         totalItems={data.length}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      /> */}
     </div>
   );
 };
