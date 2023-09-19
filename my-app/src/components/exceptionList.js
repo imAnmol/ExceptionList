@@ -1,4 +1,4 @@
-// ExceptionList.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from './tableComponent';
@@ -14,11 +14,12 @@ function ExceptionList() {
     createdBy: 'All',
   });
 
+  const [refresh,setRefresh]=useState(false)
 
-  var populateExceptions = () => {
+  let populateExceptions = () => {
     axios.get('http://localhost:8081/api/exception').then(
       (response) => {
-        console.log('A');
+        console.log('inside ExceptionList Component');
         setExceptions(response.data);
         setFilteredData(response.data);
       },
@@ -57,13 +58,19 @@ function ExceptionList() {
     setFilteredData(sortedData);
   };
 
+  const handleRefreshIconTrue = () => {
+    setRefresh(true);
+  };
 
+  const handleRefreshIconFalse = () => {
+    setRefresh(false);
+  };
 
 
   return (
     <div>
-      <Filter onSelectFilter={applyFilters} onSortAscending={handleSortAscending} data={exceptions} />
-      <TableComponent data={filteredData} updateData={updateData} />
+      <Filter onSelectFilter={applyFilters} onSortAscending={handleSortAscending} data={exceptions} onRefresh={handleRefreshIconTrue} />
+      <TableComponent data={filteredData} updateData={updateData} onRefresh={handleRefreshIconFalse} refresh={refresh}/>
     </div>
   );
 }

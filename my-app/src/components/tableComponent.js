@@ -70,7 +70,8 @@ const getStatusButtonProps = (status) => {
   }
 };
 
-const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
+const TableComponent = ({ data, updateData , onRefresh , refresh }) => {
+
   const [tableData, setTableData] = useState(data);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -88,7 +89,16 @@ const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
         autoClose: 2000,
       });
     }
+    
   }, [showAssignedPopup]);
+
+  
+  useEffect(()=>{
+    setAssigning(false); 
+    setSearchTerm();   
+    onRefresh();
+  },[refresh,onRefresh])
+
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -102,7 +112,6 @@ const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
   if (data.length === 0) {
     return null;
   }
-
 
   const handleExceptionClick = (exception) => {
     setSelectedException(exception);
@@ -161,9 +170,7 @@ const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
     updateData(data);
   };
 
-
-
-  console.log('b');
+  console.log('inside tableComponent');
 
   let headers = Object.keys(data[0]);
   const columnsToExclude = ["description", "updatedBy", "updatedAt"];
@@ -214,6 +221,7 @@ const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
               {data
                 .filter((user) => user.exceptionId.includes(searchTerm))
                 .map((user) => (
+                  <div style={{display : "inline"}}>
                   <li key={user.exceptionId}>
                     <Button
                       variant="outlined"
@@ -222,6 +230,8 @@ const TableComponent = ({ data, updateData , assignProp , searchProp }) => {
                       {user.exceptionId}
                     </Button>
                   </li>
+                  </div>
+
                 ))}
             </ul>
           )}

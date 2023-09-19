@@ -97,10 +97,10 @@ const Filter = ({ onSelectFilter, onSortAscending , data ,onRefresh }) => {
         createdBy: 'All'
       };
       onSelectFilter(filters);
-    //   onRefresh();
+      onRefresh();
   }
 
-  console.log('c');
+  console.log('inside filterComponent');
 
   return (
     <div>
